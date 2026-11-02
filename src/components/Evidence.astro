@@ -1,0 +1,7 @@
+---
+import { business } from '../config/business';
+import { publishableCredentials } from '../config/launch';
+const credentials = publishableCredentials(business.credentials);
+---
+{credentials.length > 0 && <section class="container section"><h2>Credentials</h2><ul>{credentials.map(item => <li>{item.publicEvidenceUrl ? <a href={item.publicEvidenceUrl}>{item.label}</a> : item.label}</li>)}</ul></section>}
+{business.reviews.length > 0 && <section class="container section"><h2>From local workplaces</h2>{business.reviews.map(review => <figure><blockquote>{review.quote}</blockquote><figcaption><a href={review.evidenceUrl}>{review.author}</a></figcaption></figure>)}</section>}

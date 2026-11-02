@@ -1,0 +1,38 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { business } from '../config/business';
+import { canonicalUrl } from '../config/launch';
+import '@fontsource-variable/fraunces/full.css';
+import '@fontsource-variable/source-sans-3';
+import '../styles/global.css';
+import '../styles/nordic.css';
+interface Props { title: string; description?: string }
+const { title, description = business.seo.description } = Astro.props;
+const canonical = canonicalUrl(business.seo.siteUrl, Astro.url.pathname);
+const schema = {
+  '@context': 'https://schema.org', '@type': 'LocalBusiness', name: business.name,
+  legalName: business.legalProvider,
+  description: business.seo.description,
+  areaServed: business.serviceAreas.map(name => ({ '@type': 'City', name: `${name}, Colorado` })),
+  ...(business.seo.siteUrl ? { url: business.seo.siteUrl } : {}),
+  ...(business.phone ? { telephone: business.phone } : {}),
+  ...(business.email ? { email: business.email } : {}),
+  founder: { '@type': 'Person', name: business.owner },
+  hasOfferCatalog: { '@type': 'OfferCatalog', name: 'Routine commercial cleaning', itemListElement: [{ '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Recurring workplace cleaning', serviceType: 'Commercial cleaning', areaServed: business.serviceAreas.join(', ') } }] },
+};
+---
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="theme-color" content="#293F35"/>
+  <title>{title}</title><meta name="description" content={description}/>
+  <meta name="robots" content={business.seo.allowIndexing ? 'index, follow' : 'noindex, nofollow'}/>
+  {canonical && <link rel="canonical" href={canonical}/>}
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+  <meta property="og:type" content="website"/><meta property="og:locale" content="en_US"/><meta property="og:site_name" content={business.name}/><meta property="og:title" content={title}/><meta property="og:description" content={description}/>
+  {canonical && <meta property="og:url" content={canonical}/>}
+  {business.seo.siteUrl && <meta property="og:image" content={`${business.seo.siteUrl}/social-card.jpg`}/>}
+  <meta property="og:image:alt" content="A warm, tidy office reception with oak finishes. Illustrative imagery."/>
+  <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')}/>
+</head><body><a class="skip-link" href="#main">Skip to content</a><Header/><main id="main" tabindex="-1"><slot/></main><Footer/></body></html>

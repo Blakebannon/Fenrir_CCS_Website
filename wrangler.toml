@@ -1,0 +1,8 @@
+name = "fenrir-commercial-cleaning-service"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-11-01"
+# Credentials and destination go in Cloudflare's environment settings, never here.
+[vars]
+INQUIRIES_ENABLED = "false"
+[env.preview.vars]
+INQUIRIES_ENABLED = "false"

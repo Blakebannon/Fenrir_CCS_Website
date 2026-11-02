@@ -1,0 +1,33 @@
+---
+import Mark from './Mark.astro';
+import { business } from '../config/business';
+const links = [ ['Services', '/#services'], ['Our Approach', '/#approach'], ['About', '/about'], ['Service Area', '/#service-area'] ];
+---
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label={`${business.name} home`}>
+      <Mark />
+      <span><span class="wordmark">Fenrir</span><span class="brand-description">Commercial Cleaning Service</span></span>
+    </a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav"><span>Menu</span><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+    <nav id="primary-nav" class="primary-nav" aria-label="Main navigation">
+      {links.map(([label, href]) => <a href={href} aria-current={Astro.url.pathname === href ? 'page' : undefined}>{label}</a>)}
+      {business.phone && <a class="nav-phone" href={business.phoneHref}>{business.phone}</a>}
+      <a class="button button-small" href="/request-walkthrough">Request a Walkthrough</a>
+    </nav>
+  </div>
+</header>
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const nav = document.querySelector<HTMLElement>('#primary-nav');
+  document.querySelector('.site-header')?.classList.add('nav-ready');
+  const close = () => { toggle?.setAttribute('aria-expanded', 'false'); nav?.classList.remove('is-open'); };
+  toggle?.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    toggle.setAttribute('aria-expanded', String(open));
+    nav?.classList.toggle('is-open', open);
+  });
+  nav?.querySelectorAll('a').forEach(link => link.addEventListener('click', close));
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') { close(); toggle.focus(); } });
+  document.addEventListener('click', event => { if (event.target instanceof Node && !document.querySelector('.site-header')?.contains(event.target)) close(); });
+</script>

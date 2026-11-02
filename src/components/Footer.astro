@@ -1,0 +1,13 @@
+---
+import Mark from './Mark.astro';
+import { business } from '../config/business';
+---
+<footer class="site-footer">
+  <div class="container footer-main">
+    <div class="footer-brand"><Mark /><p class="footer-name">{business.name}</p><p>Care for the places<br/>our communities work.</p></div>
+    <div><h2>Close to home.</h2><p>Based in Bailey, Colorado.<br/>Serving Bailey, Conifer &amp; Evergreen.</p><span class="footer-owner">Owner-operated by Blake Bannon</span></div>
+    <nav aria-label="Footer navigation"><a href="/#services">Services &amp; scope</a><a href="/about">About Fenrir</a><a href="/request-walkthrough">Request a Walkthrough</a>{business.phone && <a href={business.phoneHref}>{business.phone}</a>}{business.email && <a href={`mailto:${business.email}`}>{business.email}</a>}{business.socialLinks.map(link => <a href={link.url}>{link.label}</a>)}</nav>
+  </div>
+  <p class="container footer-legal">Service provided by {business.legalProvider}.</p>
+  <div class="container footer-bottom"><span>© {new Date().getFullYear()} {business.name}</span><a href="/privacy">Privacy</a><span>Rooted in the foothills.</span></div>
+</footer>

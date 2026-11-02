@@ -1,0 +1,34 @@
+{
+  "name": "fenrir-commercial-cleaning-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --host 127.0.0.1",
+    "build": "node --experimental-strip-types scripts/build-brand.ts && node scripts/check-build-inputs.mjs && astro build && node scripts/audit-build.mjs",
+    "preview": "astro preview --host 127.0.0.1 --port 4173",
+    "typecheck": "astro check && tsc --noEmit --project tsconfig.server.json",
+    "test": "node --experimental-strip-types --test tests/handler.test.ts tests/launch.test.ts tests/image-policy.test.ts",
+    "test:e2e": "playwright test",
+    "qa:build": "node scripts/qa-build.mjs",
+    "qa:serve": "node --experimental-strip-types scripts/qa-server.ts",
+    "check:function": "node scripts/check-function.mjs",
+    "check:secrets": "node scripts/check-staged-secrets.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "^5.2.0",
+    "@fontsource-variable/source-sans-3": "^5.2.0",
+    "astro": "^6.0.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@axe-core/playwright": "^4.10.2",
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=9.6.5"
+  }
+}

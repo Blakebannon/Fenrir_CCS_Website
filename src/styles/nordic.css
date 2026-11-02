@@ -1,0 +1,24 @@
+/* The existing editorial layout, warm palette, and content stay intact. */
+@layer nordic {
+  h1,h2{font-variation-settings:'SOFT' 0,'WONK' 0,'opsz' 64;letter-spacing:-.035em}
+  .brand{gap:13px}
+  .brand-mark{width:54px;height:54px}
+  .wordmark{font-size:36px;font-weight:520;letter-spacing:.035em;font-variation-settings:'SOFT' 0,'WONK' 0,'opsz' 48}
+  .brand-description{font-size:11px;letter-spacing:.045em;margin-top:8px}
+  .button{border-radius:0}
+  .hero-photo{position:relative;border-radius:0;clip-path:polygon(0 0,calc(100% - 48px) 0,100% 48px,100% 100%,0 100%)}
+  .landscape-figure img{border-radius:0;clip-path:polygon(0 0,100% 0,100% calc(100% - 36px),calc(100% - 36px) 100%,0 100%)}
+  .image-seal{bottom:24px;border:0;border-left:2px solid var(--copper);box-shadow:none;gap:15px}
+  .image-seal .brand-mark{width:43px;height:43px}
+  .how-section{border-top:5px solid #7b8a72}
+  .steps li>span{font-family:var(--sans);font-size:17px;letter-spacing:.09em}
+  .index-number{letter-spacing:.09em}
+  .spaces-list article{border-top-color:#adb7a0}
+  .town-list{border-bottom-color:#8a9a7c}
+  .footer-brand .brand-mark{width:48px;height:48px}
+  .inquiry-form,.field input,.field select,.field textarea{border-radius:1px}
+  .site-header:not(.nav-ready) .primary-nav{display:flex;flex-wrap:wrap}
+  .site-header:not(.nav-ready) .menu-toggle{display:none}
+  @media(max-width:1190px){.brand-mark{width:46px;height:46px}.wordmark{font-size:33px}.brand{gap:11px}.brand-description{font-size:10px}.header-inner{min-height:90px;flex-wrap:wrap;gap:0}.menu-toggle{display:flex;align-items:center;gap:10px;padding:14px 0 14px 16px;font-size:15px;min-height:48px}.primary-nav{display:none;width:100%;padding:10px 0 22px;align-items:stretch;gap:0}.primary-nav.is-open{display:flex;flex-direction:column}.primary-nav>a:not(.button){font-size:17px;padding:13px 0;border-top:1px solid var(--rule)}.primary-nav .button{margin-top:12px;align-self:flex-start;font-size:15px}}
+  @media(max-width:760px){.brand-mark{width:42px;height:42px}.wordmark{font-size:31px}.brand{gap:11px}.brand-description{margin-top:6px;font-size:11px;letter-spacing:0}.hero-photo{clip-path:polygon(0 0,calc(100% - 32px) 0,100% 32px,100% 100%,0 100%)}.image-seal{gap:12px}.image-seal .brand-mark{width:36px;height:36px}.footer-brand .brand-mark{width:39px;height:39px}}
+}
