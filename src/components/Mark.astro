@@ -1,8 +1,1 @@
----
-interface Props { small?: boolean }
-import { logoPaths, logoViewBox } from '../config/brand';
-const { small = false } = Astro.props;
----
-<svg class:list={['brand-mark', { small }]} viewBox={logoViewBox} fill="currentColor" aria-hidden="true">
-  {logoPaths.map(d => <path d={d} fill-rule="evenodd"/>)}
-</svg>
+<img class="brand-mark" src="/brand/mark.png" width="304" height="169" alt="" aria-hidden="true" loading="lazy" decoding="async"/>

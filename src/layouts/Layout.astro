@@ -29,7 +29,7 @@ const schema = {
   <title>{title}</title><meta name="description" content={description}/>
   <meta name="robots" content={business.seo.allowIndexing ? 'index, follow' : 'noindex, nofollow'}/>
   {canonical && <link rel="canonical" href={canonical}/>}
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+  <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64"/>
   <meta property="og:type" content="website"/><meta property="og:locale" content="en_US"/><meta property="og:site_name" content={business.name}/><meta property="og:title" content={title}/><meta property="og:description" content={description}/>
   {canonical && <meta property="og:url" content={canonical}/>}
   {business.seo.siteUrl && <meta property="og:image" content={`${business.seo.siteUrl}/social-card.jpg`}/>}

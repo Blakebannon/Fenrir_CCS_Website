@@ -1,0 +1,11 @@
+---
+import { Image } from 'astro:assets';
+import transparentLogo from '../assets/fenrir-logo.png';
+import lightLogo from '../assets/fenrir-logo-light.png';
+import { business } from '../config/business';
+interface Props { light?: boolean; eager?: boolean }
+const { light = false, eager = false } = Astro.props;
+---
+<Image class="brand-logo" src={light ? lightLogo : transparentLogo} alt={business.name}
+  widths={[240, 480, 720]} sizes={light ? '240px' : '(max-width: 760px) 180px, 240px'} width={240} height={160}
+  format="webp" loading={eager ? 'eager' : 'lazy'} decoding="async"/>

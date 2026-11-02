@@ -2,7 +2,7 @@
 
 Owner-operated commercial cleaning by Blake Bannon, serving Bailey, Conifer, and Evergreen, Colorado. Public phone: **303-513-4389**. Legal service provider: Red Rocks Technology Group LLC d/b/a Fenrir Commercial Cleaning Service.
 
-Complete Astro + TypeScript website and separate Cloudflare Pages inquiry handler. The four primary pages are `/`, `/about`, `/request-walkthrough`, and `/privacy`, with a custom 404. Original illustrative images, current wolf/ridgeline SVG branding, self-hosted fonts, and licenses are retained.
+Complete Astro + TypeScript website and separate Cloudflare Pages inquiry handler. The four primary pages are `/`, `/about`, `/request-walkthrough`, and `/privacy`, with a custom 404. Owner-supplied Fenrir logos and Blake's portrait, illustrative workplace imagery, self-hosted fonts, and licenses are retained.
 
 ## Installation and local preview
 
@@ -24,14 +24,14 @@ Phone contact uses `tel:+13035134389`. Recurring service generally runs one to t
 
 **Online inquiries and indexing remain disabled. Nothing has been deployed to a hosting provider.** No verified production domain, business email, sender/recipient inbox, Turnstile credentials or email-provider credentials are available. The contact page offers a call to Blake and disables online submission. Canonicals and sitemap URLs are omitted until a verified origin exists; robots.txt disallows indexing. No email or domain is guessed.
 
-Cleaning-specific insurance is being arranged. No insurance, bonding, licensing, certification, customer, review or operating-history claims are configured. The exact separately approved original logo is not identified among available assets; the current logo is preserved. See [asset records](docs/ASSETS.md).
+Cleaning-specific insurance is being arranged. No insurance, bonding, licensing, certification, customer, review or operating-history claims are configured. The logos and owner portrait supplied in `Logo_and_Owner/` are applied across the website. See [asset records](docs/ASSETS.md).
 
 ## Source and configuration
 
 - `src/config/business.ts`: brand, owner, legal provider, towns, phone actions and optional verified evidence.
 - `src/config/launch.ts`: build flags, canonical/sitemap policy and confirmed default phone.
 - `src/pages/`, `src/components/`, `src/styles/`: pages and responsive presentation.
-- `src/assets/`, `public/`: original images, SVG branding, public assets and font licenses. Fontsource packages install from the lockfile; fonts are bundled locally.
+- `src/assets/`, `public/`: original images, owner-supplied branding, generated mark/favicon, public assets and font licenses. Fontsource packages install from the lockfile; fonts are bundled locally.
 - `src/lib/inquiry.ts`, `src/scripts/walkthrough.ts`: validation and accessible browser behavior.
 - `server/walkthrough.ts`, `functions/api/walkthrough.ts`: server validation, Turnstile and Resend.
 - `wrangler.toml`, `public/_headers`, `public/_routes.json`: Cloudflare build, security and routing.
@@ -61,6 +61,6 @@ Evidence and limits: [VERIFICATION.md](docs/VERIFICATION.md). Registry restricti
 
 ## Repository and later deployment
 
-Requested destination: https://github.com/Blakebannon/Fenrir_CCS_Website.git. No local Git history or remotes existed at inspection. Git was initialized on `main`, but the environment blocks `.git/config` and `.git/index.lock` writes and outbound GitHub access. Remote history/branches could not be inspected; no integration, commit or push is claimed. Resume with Git metadata writes and authenticated GitHub connectivity enabled, inspect the destination, preserve any history, run staged checks, and push without force. Use an appropriate review branch if remote history requires integration.
+Repository: https://github.com/Blakebannon/Fenrir_CCS_Website.git, configured as `origin`. Before committing the owner-supplied image update, the local base commit `2293831` was verified to match GitHub's `main`. Preserve existing history, review staged files, run the secret check, and use normal pushes. Earlier environment-access limitations are recorded in the historical verification notes.
 
 Start with [LAUNCH-CHECKLIST.md](docs/LAUNCH-CHECKLIST.md), then [DEPLOYMENT.md](docs/DEPLOYMENT.md) and [FORM-INTEGRATION.md](docs/FORM-INTEGRATION.md). Hosting publication, GitHub Pages activation, purchases and DNS changes were not authorized or performed. A GitHub push alone would not make this an operating production website.

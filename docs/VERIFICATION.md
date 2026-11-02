@@ -1,8 +1,18 @@
 # Verification report — November 2, 2026
 
-## Result
+## Owner-supplied logo and portrait update
 
-The four-page website is updated and verified locally. The established layout, warm mountain-town palette, imagery, self-hosted fonts and current Nordic wolf/ridgeline mark are preserved. The exact separately approved original logo was not identified among available files; no replacement identity was invented.
+The three files supplied in `Logo_and_Owner/` are applied to the local website. The full transparent logo appears in the header, the light-background version appears in the footer, and crops of the supplied emblem replace the provisional hero seal and favicon. Blake's portrait replaces the illustrative landscape on the homepage and About page, preserving its square composition with descriptive alt text and an owner caption.
+
+The originals remain in place. Source copies and a lossless PNG conversion of the portrait feed Astro's responsive WebP optimization. The PNG-only decoder policy remains in force. Asset provenance and the launch checklist are updated.
+
+Validation: production build and public-output audit passed (40 permitted files, 14 optimized WebP variants); Astro/server type checks passed (40 files, no errors, warnings, or hints); all 22 existing unit tests passed. All 12 relevant browser checks passed across desktop, tablet and phone: page routes, images, internal links, accessibility, navigation, keyboard access, narrow layouts and JavaScript-disabled menus. Screenshots were reviewed for the new header, owner sections and footer. The initial browser run encountered a transient 404 while the preview was being rebuilt; the complete 12-check run passed against the finished build. Owned preview servers were stopped manually after the checks to complete runner teardown in this Windows environment. No hosting publication was performed.
+
+The owner subsequently authorized a GitHub commit and push. With the required environment access, GitHub's `main` was verified at `229383165c01a44fe40946e120c8f936cfdffa05`, matching the local base, and `origin` was configured to `https://github.com/Blakebannon/Fenrir_CCS_Website.git`. The earlier access restrictions below describe the previous environment state.
+
+## Earlier repository verification
+
+The following records describe the earlier repository preparation, before the owner supplied the assets above. At that stage, the established layout, warm mountain-town palette, imagery, self-hosted fonts and provisional Nordic wolf/ridgeline mark were preserved because the exact separately approved original logo had not yet been supplied. The asset update above supersedes that earlier branding state.
 
 Confirmed information is applied: Fenrir Commercial Cleaning Service, Blake Bannon, 303-513-4389, Bailey/Conifer/Evergreen, and Red Rocks Technology Group LLC d/b/a Fenrir Commercial Cleaning Service. The LLC is identified in the footer, privacy information and structured data. Phone links use `tel:+13035134389`.
 

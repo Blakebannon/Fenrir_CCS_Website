@@ -2,22 +2,25 @@
 
 ## Identity
 
-The existing provisional identity uses a calm geometric wolf profile with a ridgeline cut into the neck, a restrained Fraunces wordmark, and a clear Source Sans 3 descriptor reading **Commercial Cleaning Service**. On November 2, 2026, the current native paths and two branding review PNGs were inspected. No separately identified exact approved original was available. The current logo and source geometry are preserved; no replacement or FFXI-inspired identity was introduced. An approved original file is still needed if it differs from this mark.
+On November 2, 2026, the owner supplied two Fenrir logo versions and a portrait in `Logo_and_Owner/`, explicitly identifying the portrait as himself and requesting these assets for the website. These files replace the provisional identity and the illustrative landscapes previously used beside the owner introduction. The supplied logo artwork and lettering are used directly.
 
-- `public/brand/mark.svg` and `mark-reversed.svg`: genuine SVG paths, with no embedded bitmap, emoji, rune, or badge.
-- `public/favicon.svg`: matching compact pine/ivory wolf-profile favicon.
-- `src/config/brand.ts`: canonical native path geometry; `src/components/Mark.astro` renders it. `scripts/build-brand.ts` generates the public variants and favicon consistently.
-- `src/components/Header.astro`: live, scalable typeset wordmark and readable descriptor. Fonts are self-hosted. Mark geometry and typography can be used together for a future card or shirt; review the provisional identity before commissioning printed material.
-- `src/components/Arrow.astro` and homepage pictograms: simple original SVG strokes. No emoji, stock icon font, embedded bitmap logo, or third-party icon package.
+- `src/assets/fenrir-logo.png`: unchanged copy of `ChatGPT Image Nov 2, 2026, 02_51_57 PM.png`, the transparent logo used in the header.
+- `src/assets/fenrir-logo-light.png`: unchanged copy of `ChatGPT Image Nov 2, 2026, 02_51_53 PM.png`, the light-background logo used in the footer for contrast against pine green.
+- `src/components/Logo.astro`: shared full-logo component with descriptive alt text and responsive WebP output.
+- `public/brand/mark.png` and `public/favicon.png`: resized crops of the supplied transparent artwork for the decorative hero seal and browser icon. `src/config/brand.ts` records the crops; `scripts/build-brand.ts` regenerates them during builds. The old provisional SVG logo files are removed.
+- `src/components/Arrow.astro` and homepage pictograms: simple original SVG strokes.
 
 ## Imagery
 
-Both source images were generated for this project with the **built-in ImageGen tool**, not the API/CLI fallback. No real client, employee, owner, completed job, before/after result, business premises, or exact geographic location is depicted. Public captions identify the imagery as illustrative. No external photo attribution is required for the source images; retain this provenance record. No claim of exclusive copyright or real-world provenance is made.
+The owner portrait is supplied by the user. Its square composition is preserved on the homepage and About page, with alt text and a caption identifying Blake Bannon. The source JPEG is converted to PNG without visual changes to retain the existing PNG-only optimization policy; Astro produces responsive WebP delivery files.
+
+The workplace and archived landscape were generated for this project with the **built-in ImageGen tool**, not the API/CLI fallback. Those illustrative images depict no real client, employee, owner, completed job, business premises, or exact geographic location. The workplace's public caption identifies it as illustrative. No external attribution is required for those generated images; retain this provenance record.
 
 | Project asset | Role | Origin |
 |---|---|---|
+| `src/assets/blake-bannon.png` | Owner portrait on homepage and About | Owner-supplied `ChatGPT Image Nov 2, 2026, 02_51_43 PM.jpg`; lossless PNG conversion of decoded pixels |
 | `src/assets/workplace.png` | Hero, warm small-office reception | Built-in ImageGen; original output `exec-4a8c21bf-6dd2-4987-8200-f9e3d6155c3b.png` |
-| `src/assets/foothills.png` | Owner introduction/About landscape detail | Built-in ImageGen; original output `exec-6db258e1-faf4-4e11-b57d-1f7b1fc2a1bc.png` |
+| `src/assets/foothills.png` | Archived landscape, no longer displayed | Built-in ImageGen; original output `exec-6db258e1-faf4-4e11-b57d-1f7b1fc2a1bc.png` |
 | `public/social-card.jpg` | Open Graph image when a real domain is configured | 1200 × 630 crop of the generated workplace image |
 
 The project keeps copies of both full PNG originals inside `src/assets/`; it does not depend on the tool’s external output folder. Astro creates responsive, dimensioned WebP images at build time. Full PNGs are not copied to the public build.
@@ -43,9 +46,9 @@ Full license/copyright notices are retained in `public/licenses/Fraunces-OFL.txt
 
 Warm ivory #F5F1E8, off-white #FCFAF5, pine #293F35, moss #73806A, stone #D8D0C3, copper #A66F4B, charcoal #29312D. Body and muted text use darker tones; copper is restrained decoration. Primary action text is off-white on pine. Small numbered labels use darker copper #8B5B3A. Automated contrast checks cover the visible page and enabled form states.
 
-## Nordic logo refinement
+## Historical provisional logo refinement
 
-Built-in **ImageGen** created and refined a transparent logo study, saved as `review/branding/nordic-logo-study.png` (original output `exec-f3cef37f-4252-4d94-89b5-be380c91a7c6.png`). The selected study was simplified/redrawn into native SVG geometry for the website; the raster is an exploration record, not an embedded bitmap logo. The public mark, header mark, reversed mark and favicon all use the same paths. The earlier aggressive-looking study was discarded.
+Before the owner supplied the current logo, built-in **ImageGen** created a transparent logo study, saved as `review/branding/nordic-logo-study.png` (original output `exec-f3cef37f-4252-4d94-89b5-be380c91a7c6.png`). That study informed the former provisional SVG mark. These review files and prompts remain historical records; the website now uses the owner-supplied artwork listed above.
 
 The warmer light layout and commercial-interior photography are preserved. Full variable Fraunces axes now provide restrained, less rounded headings/wordmark; corners use simple geometric cuts. No mythological, religious, military or aggressive decoration was introduced.
 
