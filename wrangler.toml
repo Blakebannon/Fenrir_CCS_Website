@@ -3,6 +3,8 @@ pages_build_output_dir = "./dist"
 compatibility_date = "2026-11-01"
 # Credentials and destination go in Cloudflare's environment settings, never here.
 [vars]
-INQUIRIES_ENABLED = "false"
+INQUIRIES_ENABLED = "true"
+SITE_ORIGIN = "https://fenrircleaningservice.com"
 [env.preview.vars]
 INQUIRIES_ENABLED = "false"
+SITE_ORIGIN = "https://fenrircleaningservice.com"

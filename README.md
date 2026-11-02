@@ -22,7 +22,7 @@ Open **http://127.0.0.1:4173**. Development: `npm.cmd run dev`, then open its pr
 
 Phone contact uses `tel:+13035134389`. Recurring service generally runs one to three visits per week. Pricing is per visit after a walkthrough, considering cleanable square footage, frequency, condition and agreed scope. A written scope and quote precede work.
 
-**Online inquiries and indexing remain disabled. Nothing has been deployed to a hosting provider.** No verified production domain, business email, sender/recipient inbox, Turnstile credentials or email-provider credentials are available. The contact page offers a call to Blake and disables online submission. Canonicals and sitemap URLs are omitted until a verified origin exists; robots.txt disallows indexing. No email or domain is guessed.
+The owner confirmed the live website is **https://fenrircleaningservice.com**, hosted on Cloudflare, with email and spam-protection credentials configured there. Production inquiries are enabled in `wrangler.toml`; Cloudflare builds of `main` default to the production environment and enable the form when `PUBLIC_TURNSTILE_SITE_KEY` is configured. An explicit `PUBLIC_FORM_ENABLED=false` or `PUBLIC_DEPLOYMENT_ENV=local` in Cloudflare still disables it. Indexing remains off by default. Local review and branch previews keep submissions disabled. Real inbox receipt must be checked separately; configured keys are not stored in this repository.
 
 Cleaning-specific insurance is being arranged. No insurance, bonding, licensing, certification, customer, review or operating-history claims are configured. The logos and owner portrait supplied in `Logo_and_Owner/` are applied across the website. See [asset records](docs/ASSETS.md).
 
@@ -38,7 +38,7 @@ Cleaning-specific insurance is being arranged. No insurance, bonding, licensing,
 
 Copy sanitized `.env.example` to ignored `.env` only when configuring a build. Public variables are `PUBLIC_DEPLOYMENT_ENV`, `PUBLIC_SITE_URL`, `PUBLIC_ALLOW_INDEXING`, `PUBLIC_BUSINESS_PHONE`, `PUBLIC_BUSINESS_EMAIL`, `PUBLIC_FORM_ENABLED` and `PUBLIC_TURNSTILE_SITE_KEY`. The confirmed phone is the default; unverified contact values stay empty.
 
-Server bindings are `INQUIRIES_ENABLED`, `SITE_ORIGIN`, `TURNSTILE_SECRET_KEY`, `RESEND_API_KEY`, `INQUIRY_FROM` and `INQUIRY_TO`. Private values belong in Cloudflare secrets or ignored `.dev.vars` for later local Functions testing, never public-prefixed variables. Both inquiry switches remain false. Preview always disables submissions and indexing. Astro preview serves static pages and does not emulate Functions.
+Server bindings are `INQUIRIES_ENABLED`, `SITE_ORIGIN`, `TURNSTILE_SECRET_KEY`, `RESEND_API_KEY`, `INQUIRY_FROM` and `INQUIRY_TO`. Private values belong in Cloudflare secrets or ignored `.dev.vars` for local Functions testing, never public-prefixed variables. The production runtime switch is true and its origin is `https://fenrircleaningservice.com`; preview stays false. Astro preview serves static pages and does not emulate Functions.
 
 ## Verification
 
@@ -63,4 +63,4 @@ Evidence and limits: [VERIFICATION.md](docs/VERIFICATION.md). Registry restricti
 
 Repository: https://github.com/Blakebannon/Fenrir_CCS_Website.git, configured as `origin`. Before committing the owner-supplied image update, the local base commit `2293831` was verified to match GitHub's `main`. Preserve existing history, review staged files, run the secret check, and use normal pushes. Earlier environment-access limitations are recorded in the historical verification notes.
 
-Start with [LAUNCH-CHECKLIST.md](docs/LAUNCH-CHECKLIST.md), then [DEPLOYMENT.md](docs/DEPLOYMENT.md) and [FORM-INTEGRATION.md](docs/FORM-INTEGRATION.md). Hosting publication, GitHub Pages activation, purchases and DNS changes were not authorized or performed. A GitHub push alone would not make this an operating production website.
+Start with [LAUNCH-CHECKLIST.md](docs/LAUNCH-CHECKLIST.md), then [DEPLOYMENT.md](docs/DEPLOYMENT.md) and [FORM-INTEGRATION.md](docs/FORM-INTEGRATION.md). The existing Cloudflare site must finish deploying the pushed source before form activation takes effect. No GitHub Pages activation, purchases or DNS changes are part of this update.

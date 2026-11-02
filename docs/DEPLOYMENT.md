@@ -1,4 +1,6 @@
-# Cloudflare deployment preparation — not published
+# Cloudflare deployment and production contact form
+
+The owner confirmed the live Cloudflare site at `https://fenrircleaningservice.com` and existing production email/Turnstile credentials. The requested source activation enables production inquiries and supplies that origin. Cloudflare `main` builds default to production and enable the public form when the public Turnstile key exists; `PUBLIC_FORM_ENABLED=false` and `PUBLIC_DEPLOYMENT_ENV=local` remain explicit overrides that must be removed or changed in Cloudflare if present. Other branch builds remain disabled previews. Earlier setup guidance below is retained for maintaining the deployment.
 
 ## Structure confirmed locally
 
@@ -9,7 +11,7 @@
 | functions/api/walkthrough.ts | Pages file-routing entry point at **/api/walkthrough**, exporting onRequest. |
 | server/walkthrough.ts | Shared Web API receiver, Turnstile verification and Resend transport. No Astro/Sharp/esbuild/Node service or CRM runtime. |
 | public/_routes.json | Function invocation limited to /api/*; marketing routes are static. |
-| wrangler.toml | Pages output ./dist, compatibility date, provisional project name and disabled runtime switch. Not a Worker main configuration. |
+| wrangler.toml | Pages output ./dist, compatibility date, production inquiries enabled with the confirmed origin; preview inquiries disabled. Not a Worker main configuration. |
 
 The entry point is type-checked, invoked by tests, and bundled by `node scripts/check-function.mjs`. This confirms structure/local compilation. **Wrangler emulation and a hosted Cloudflare deployment have not been tested.** A static file upload alone cannot provide the POST endpoint.
 
@@ -28,11 +30,11 @@ Future deployment command, only after publication is authorized: `npx wrangler p
 
 | Name | Local review | Pages preview/staging | Future production |
 |---|---|---|---|
-| PUBLIC_DEPLOYMENT_ENV | local (default) | **preview** | production |
-| PUBLIC_SITE_URL | Blank | Real canonical origin once chosen, or blank | Actual HTTPS origin; no path/query/credentials |
+| PUBLIC_DEPLOYMENT_ENV | local (default) | **preview** | production (automatic for Cloudflare main if unset) |
+| PUBLIC_SITE_URL | Blank | Real canonical origin once chosen, or blank | https://fenrircleaningservice.com (production default) |
 | PUBLIC_BUSINESS_PHONE | 303-513-4389 (source default) | 303-513-4389 | 303-513-4389 |
 | PUBLIC_BUSINESS_EMAIL | Blank | Verified public value only | Verified public email or blank |
-| PUBLIC_FORM_ENABLED | false | **false** | Keep false until configured and tested |
+| PUBLIC_FORM_ENABLED | false | **false** | true, or omit to use the enabled production default |
 | PUBLIC_TURNSTILE_SITE_KEY | Blank | Blank | Real public site key once ready |
 | PUBLIC_ALLOW_INDEXING | false | **false** | Keep false until verification and launch approval |
 
@@ -44,16 +46,16 @@ A real PUBLIC_SITE_URL can prepare canonical links, Open Graph URLs and the four
 
 | Binding | Storage | Current state |
 |---|---|---|
-| INQUIRIES_ENABLED | Tracked nonsecret vars in wrangler.toml, plus preview override | **false in both** |
-| SITE_ORIGIN | Cloudflare Pages production secret | Unset |
-| TURNSTILE_SECRET_KEY | Cloudflare Pages production secret | Unset |
-| RESEND_API_KEY | Cloudflare Pages production secret | Unset |
-| INQUIRY_FROM | Cloudflare Pages production secret | Unset |
-| INQUIRY_TO | Cloudflare Pages production secret | Unset |
+| INQUIRIES_ENABLED | Tracked nonsecret vars in wrangler.toml, plus preview override | true in production; false in preview |
+| SITE_ORIGIN | Tracked nonsecret vars in wrangler.toml | https://fenrircleaningservice.com |
+| TURNSTILE_SECRET_KEY | Cloudflare Pages production secret | Existing configuration reported by owner |
+| RESEND_API_KEY | Cloudflare Pages production secret | Existing configuration reported by owner |
+| INQUIRY_FROM | Cloudflare Pages production secret | Existing configuration reported by owner |
+| INQUIRY_TO | Cloudflare Pages production secret | Existing configuration reported by owner |
 
 Use the secret UI or interactive secret tooling. Never put secret values in command arguments, screenshots, source files, logs, or public-prefixed variables. Do not copy runtime secrets to preview environments. The public origin/contact/site-key values are intentionally public; recipient and provider keys stay server-side.
 
-Wrangler is the source of truth for its nonsecret vars. During a later authorized protected delivery test, change the top-level INQUIRIES_ENABLED to true **only after secrets are configured**, retaining the preview override as false. A dashboard edit to that same nonsecret variable can be overwritten by tracked configuration. The browser's independent PUBLIC_FORM_ENABLED switch also remains off until the workflow is ready.
+Wrangler is the source of truth for its nonsecret vars. The top-level `INQUIRIES_ENABLED` is now true following the owner's activation request; the preview override remains false. A dashboard edit to that same nonsecret variable can be overwritten by tracked configuration. Explicit public build overrides still apply and require a rebuild after changing them.
 
 After a reviewed Wrangler install, `npx wrangler pages dev dist` can test the actual Pages runtime locally. Local secrets belong in ignored .dev.vars; never print it. Regular `npm run preview` is static only.
 

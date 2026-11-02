@@ -11,10 +11,26 @@ test('local defaults and preview markers never enable submission or indexing', (
 });
 test('production gates fail closed without canonical origin, direct contact and a real site key', () => {
   const base = {PUBLIC_DEPLOYMENT_ENV:'production',PUBLIC_ALLOW_INDEXING:'true',PUBLIC_FORM_ENABLED:'true',PUBLIC_TURNSTILE_SITE_KEY:'production-key'};
-  assert.throws(() => resolveLaunch(base),/canonical/);
+  assert.throws(() => resolveLaunch({...base,PUBLIC_SITE_URL:'http://fenrircleaningservice.com'}),/canonical/);
   assert.throws(() => resolveLaunch({...base,PUBLIC_SITE_URL:'https://fenrir.example.test',PUBLIC_BUSINESS_PHONE:''}),/direct contact/);
   assert.throws(() => resolveLaunch({...base,PUBLIC_SITE_URL:'https://fenrir.example.test',PUBLIC_BUSINESS_EMAIL:'test@example.test',PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA'}),/production Turnstile/);
   assert.throws(() => resolveLaunch({...base,PUBLIC_SITE_URL:'https://fenrir.example.test',PUBLIC_BUSINESS_EMAIL:'test@example.test',PUBLIC_FORM_ENABLED:'false'}),/receiver/);
+});
+
+test('Cloudflare main enables the configured production form and other branches stay disabled', () => {
+  const configured = {CF_PAGES:'1',CF_PAGES_BRANCH:'main',PUBLIC_TURNSTILE_SITE_KEY:'production-key'};
+  const production = resolveLaunch(configured);
+  assert.equal(production.environment,'production');
+  assert.equal(production.siteUrl,'https://fenrircleaningservice.com');
+  assert.equal(production.formEnabled,true);
+  assert.equal(production.allowIndexing,false);
+  assert.equal(resolveLaunch({...configured,PUBLIC_FORM_ENABLED:'false'}).formEnabled,false);
+  assert.equal(resolveLaunch({...configured,PUBLIC_TURNSTILE_SITE_KEY:''}).formEnabled,false);
+  assert.throws(() => resolveLaunch({...configured,PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA'}),/production Turnstile/);
+  const preview = resolveLaunch({...configured,CF_PAGES_BRANCH:'feature',PUBLIC_DEPLOYMENT_ENV:'production',PUBLIC_FORM_ENABLED:'true',PUBLIC_ALLOW_INDEXING:'true'});
+  assert.equal(preview.environment,'preview');
+  assert.equal(preview.formEnabled,false);
+  assert.equal(preview.allowIndexing,false);
 });
 
 test('confirmed public phone is available without environment setup and uses international call URLs', () => {
@@ -39,7 +55,12 @@ test('unapproved, unverified and expired insurance/bonding claims remain unpubli
 });
 test('Cloudflare route and static build declarations match the real handler', async () => {
   const config = await readFile('wrangler.toml','utf8'); const routes = JSON.parse(await readFile('public/_routes.json','utf8'));
-  assert.match(config,/pages_build_output_dir\s*=\s*"\.\/dist"/); assert.match(config,/INQUIRIES_ENABLED\s*=\s*"false"/);
+  assert.match(config,/pages_build_output_dir\s*=\s*"\.\/dist"/);
+  const production = config.split('[vars]')[1].split('[env.preview.vars]')[0];
+  const preview = config.split('[env.preview.vars]')[1];
+  assert.match(production,/INQUIRIES_ENABLED\s*=\s*"true"/);
+  assert.match(production,/SITE_ORIGIN\s*=\s*"https:\/\/fenrircleaningservice\.com"/);
+  assert.match(preview,/INQUIRIES_ENABLED\s*=\s*"false"/);
   assert.deepEqual(routes.include,['/api/*']);
   const {onRequest} = await import('../functions/api/walkthrough.ts');
   const response = await onRequest({request:new Request('https://fenrir.example.test/api/walkthrough',{method:'POST'}),env:{}});

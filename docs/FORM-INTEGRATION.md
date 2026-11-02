@@ -4,11 +4,11 @@
 
 Browser → same-origin `POST /api/walkthrough` → Cloudflare Pages Function → server-side validation → Turnstile verification → Resend transactional email acceptance → public confirmation.
 
-Resend acceptance is not a calendar booking or proof that an email reached the inbox. Verify the real owner inbox before launch. There is no production delivery configured or verified yet.
+Resend acceptance is not a calendar booking or proof that an email reached the inbox. The owner confirmed Cloudflare production credentials are configured for `https://fenrircleaningservice.com`; actual inbox receipt has not been verified in this session.
 
 The receiving code uses Web APIs and has no always-on server or marketing-framework runtime. Replace the email transport in `server/walkthrough.ts` for another delivery provider if desired. Keep the browser contract and server-side validation intact.
 
-The runtime also requires `INQUIRIES_ENABLED="true"`; its tracked production and preview values remain **false**. `wrangler.toml` owns this nonsecret switch. Keep preview false. The browser requires the independent public flag and `PUBLIC_DEPLOYMENT_ENV=production`; generic preview mode never activates submissions.
+The runtime requires `INQUIRIES_ENABLED="true"`; `wrangler.toml` now enables production and keeps preview disabled. It supplies `SITE_ORIGIN=https://fenrircleaningservice.com`. Cloudflare builds of `main` default to production; the browser form is enabled when a production `PUBLIC_TURNSTILE_SITE_KEY` exists unless `PUBLIC_FORM_ENABLED=false` explicitly disables it. Other Cloudflare branches are forced to preview, even if a production marker is inherited.
 
 ## Configuration
 
@@ -17,7 +17,7 @@ The runtime also requires `INQUIRIES_ENABLED="true"`; its tracked production and
 3. Set server-only `INQUIRY_FROM` to a verified sender such as your approved display name and sending address; set `INQUIRY_TO` to the actual owner inquiry inbox. No values have been supplied here.
 4. Create a production Cloudflare Turnstile widget restricted to the actual site hostname. Use the public site key in `PUBLIC_TURNSTILE_SITE_KEY`; store the secret as `TURNSTILE_SECRET_KEY`. The widget uses action `request_walkthrough`; the receiver checks success, action, and hostname. Known Cloudflare test secrets are rejected for nonlocal production origins.
 5. Set server-only `SITE_ORIGIN` to the actual HTTPS origin, exactly matching the public website (including www if used). Cross-origin and origin-less POSTs are rejected. Add a redirect from alternate domains to the canonical host.
-6. Keep `PUBLIC_FORM_ENABLED=false` until runtime secrets and a verified direct contact are in place. Enable in a protected, noindex deployment to verify delivery; only then enable production indexing and rebuild.
+6. For the authorized production activation, set `PUBLIC_FORM_ENABLED=true` or omit it to use the production default. Remove any stale `PUBLIC_DEPLOYMENT_ENV=local` override or set it to `production`. Keep indexing false while verifying delivery. A GitHub push must finish its Cloudflare build before these source changes take effect.
 
 For full Cloudflare local runtime verification after installing Wrangler: build, then run `npx wrangler pages dev dist`. Server secrets can be provided through an ignored `.dev.vars` file per Cloudflare’s local-development documentation. Never commit this file. The source’s regular `npm run preview` command does not emulate Functions.
 
@@ -68,7 +68,7 @@ Official references: [Turnstile server verification](https://developers.cloudfla
 
 ## Actual recipient acceptance test — NOT RUN
 
-The verified public phone is 303-513-4389. No real domain, verified business email, provider account/keys, sender or recipient is configured. Controlled receiver acceptance and provider HTTP acceptance are separate from intended-inbox receipt. **Online inquiries are not production-ready; phone contact is available.**
+The verified public phone is 303-513-4389 and the confirmed live domain is `fenrircleaningservice.com`. The owner reports that provider and spam-protection configuration exists in Cloudflare. Controlled receiver acceptance and provider HTTP acceptance are separate from intended-inbox receipt; this session has not verified real inbox delivery.
 
 When configuration is available and a protected deployment/test is authorized:
 
@@ -78,6 +78,6 @@ When configuration is available and a protected deployment/test is authorized:
 4. Have the intended recipient confirm the message actually arrived in the intended inbox, with complete field content and working reply-to behavior. Check spam/quarantine and sender-domain authentication. A provider ID alone does not pass this step.
 5. Test a controlled delivery failure, field preservation, and verified direct-contact fallback; restore the working receiver and confirm another real receipt.
 6. Record the test date, configured environment, redacted provider reference, and recipient confirmation in a private operational record outside Git. Update VERIFICATION.md with a redacted passed/not-passed status only after evidence exists.
-7. Public activation, publication, and indexing still require owner authorization. Until then, return the switches to false after the protected test.
+7. The owner has authorized the form activation and GitHub push. Indexing is a separate setting and remains off by default.
 
 No step above has been represented as completed in the current review.

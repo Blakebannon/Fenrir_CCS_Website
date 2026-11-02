@@ -1,5 +1,15 @@
 import { resolveLaunch, phoneUrl, type Credential } from './launch';
-const launch = resolveLaunch(import.meta.env);
+const launch = resolveLaunch({
+  PUBLIC_DEPLOYMENT_ENV: import.meta.env.PUBLIC_DEPLOYMENT_ENV,
+  PUBLIC_SITE_URL: import.meta.env.PUBLIC_SITE_URL,
+  PUBLIC_ALLOW_INDEXING: import.meta.env.PUBLIC_ALLOW_INDEXING,
+  PUBLIC_BUSINESS_PHONE: import.meta.env.PUBLIC_BUSINESS_PHONE,
+  PUBLIC_BUSINESS_EMAIL: import.meta.env.PUBLIC_BUSINESS_EMAIL,
+  PUBLIC_FORM_ENABLED: import.meta.env.PUBLIC_FORM_ENABLED,
+  PUBLIC_TURNSTILE_SITE_KEY: import.meta.env.PUBLIC_TURNSTILE_SITE_KEY,
+  CF_PAGES: process.env.CF_PAGES,
+  CF_PAGES_BRANCH: process.env.CF_PAGES_BRANCH,
+});
 const {siteUrl,phone,email} = launch;
 
 export const business = {

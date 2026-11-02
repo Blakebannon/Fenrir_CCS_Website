@@ -1,5 +1,13 @@
 # Verification report — November 2, 2026
 
+## Production contact-form activation
+
+The owner confirmed `https://fenrircleaningservice.com` is hosted on Cloudflare with email and spam-protection credentials already configured there, and requested form activation plus a GitHub commit/push. Before this change, a live read showed `data-enabled="false"` and an empty validation-only POST returned 503; no inquiry or email was sent.
+
+`wrangler.toml` now enables the production receiver and sets its origin to the confirmed domain; preview remains disabled. Cloudflare `main` builds default to production, use the confirmed canonical origin, and enable the browser form when a real public Turnstile key is configured. Explicit public build overrides are still respected. Server-only Cloudflare build markers are read explicitly, and other branches are forced to preview. Secrets remain in Cloudflare.
+
+Validation includes 23 unit tests, Astro/server type checks, audited local and isolated QA builds, Function compilation, and browser validation/failure/success checks at desktop, tablet and phone sizes. A production-context build also confirms that the configured form and canonical origin reach the generated HTML; its synthetic public key exists only in ignored validation output. These checks do not establish real inbox receipt. The live deployment is checked separately after the push.
+
 ## Owner-supplied logo and portrait update
 
 The three files supplied in `Logo_and_Owner/` are applied to the local website. The full transparent logo appears in the header, the light-background version appears in the footer, and crops of the supplied emblem replace the provisional hero seal and favicon. Blake's portrait replaces the illustrative landscape on the homepage and About page, preserving its square composition with descriptive alt text and an owner caption.

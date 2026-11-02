@@ -3,9 +3,10 @@ export const publicPagePaths = ['/', '/about', '/request-walkthrough', '/privacy
 
 /** Pure build-time policy, also exercised without embedding any credentials. */
 export function resolveLaunch(values: BuildValues) {
-  const environment = values.PUBLIC_DEPLOYMENT_ENV || 'local';
+  const cloudflareEnvironment = values.CF_PAGES === '1' ? (values.CF_PAGES_BRANCH === 'main' ? 'production' : 'preview') : 'local';
+  const environment = cloudflareEnvironment === 'preview' ? 'preview' : values.PUBLIC_DEPLOYMENT_ENV || cloudflareEnvironment;
   if (!['local','preview','production','qa'].includes(environment)) throw new Error('PUBLIC_DEPLOYMENT_ENV must be local, preview, production, or qa.');
-  const rawUrl = (values.PUBLIC_SITE_URL || '').trim();
+  const rawUrl = (values.PUBLIC_SITE_URL || (environment === 'production' ? 'https://fenrircleaningservice.com' : '')).trim();
   let siteUrl = '';
   if (rawUrl) {
     const parsed = new URL(rawUrl);
@@ -15,7 +16,8 @@ export function resolveLaunch(values: BuildValues) {
   const phone = (values.PUBLIC_BUSINESS_PHONE ?? '303-513-4389').trim();
   const email = (values.PUBLIC_BUSINESS_EMAIL || '').trim();
   const siteKey = values.PUBLIC_TURNSTILE_SITE_KEY || '';
-  const formEnabled = ['production','qa'].includes(environment) && values.PUBLIC_FORM_ENABLED === 'true' && Boolean(siteKey);
+  const formRequested = values.PUBLIC_FORM_ENABLED ?? (environment === 'production' ? 'true' : 'false');
+  const formEnabled = ['production','qa'].includes(environment) && formRequested === 'true' && Boolean(siteKey);
   const allowIndexing = environment === 'production' && values.PUBLIC_ALLOW_INDEXING === 'true';
   if (environment === 'production' && (formEnabled || allowIndexing)) {
     if (!siteUrl) throw new Error('Production contact and indexing require a canonical HTTPS PUBLIC_SITE_URL.');
