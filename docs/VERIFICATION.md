@@ -1,5 +1,13 @@
 # Verification report — November 3, 2026
 
+## Production search indexing
+
+The owner authorized production indexing. `PUBLIC_ALLOW_INDEXING=true` is set in the production Wrangler variables and explicitly passed into Astro by the build wrapper. This one release setting takes precedence over a stale Cloudflare indexing override; every other build override and all inquiry/runtime settings are preserved. Preview sets the flag false and remains forced noindex even with inherited production flags. No Function code, credential, inquiry setting, or security header was changed.
+
+Before the change, all four live public pages emitted `noindex, nofollow`, robots.txt disallowed `/`, canonicals and sitemap URLs already used the production origin, and no blocking `X-Robots-Tag` header was present. The live inquiry configuration reported enabled with the approved widget key. No inquiry or email was sent.
+
+Checks cover all four generated production pages, `index, follow` metadata without blocking robots directives, `_headers` without a blocking X-Robots-Tag, crawlable robots.txt with the sitemap reference, the exact four production sitemap URLs, correct canonicals, and the still-enabled form/widget. Preview metadata and robots.txt remain blocking. All 31 unit tests, type checks, production/preview build checks and the actual production-context npm build pass. Live indexing signals and inquiry readiness are checked again after deployment.
+
 ## Approved production public key wired into the build
 
 Cloudflare successfully deployed commit `fc82c6d`. A live read confirmed the approved key, enabled form, zero disabled fieldsets and the Turnstile script. A subsequent empty validation-only POST returned 503, so runtime receiving was not declared working. The configuration endpoint now reports missing setting names only, to identify the remaining Cloudflare runtime binding without exposing private values. No real inquiry was sent.

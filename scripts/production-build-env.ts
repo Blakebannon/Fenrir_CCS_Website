@@ -1,6 +1,6 @@
 import { parse } from 'smol-toml';
 
-const publicBuildKeys = ['PUBLIC_DEPLOYMENT_ENV', 'PUBLIC_FORM_ENABLED', 'PUBLIC_TURNSTILE_SITE_KEY'] as const;
+const publicBuildKeys = ['PUBLIC_DEPLOYMENT_ENV', 'PUBLIC_FORM_ENABLED', 'PUBLIC_TURNSTILE_SITE_KEY', 'PUBLIC_ALLOW_INDEXING'] as const;
 type BuildEnvironment = Record<string, string | undefined>;
 
 /** Wrangler vars are runtime bindings; copy only approved public defaults into Astro's process. */
@@ -15,8 +15,8 @@ export function productionBuildEnvironment(environment: BuildEnvironment, wrangl
   for (const key of publicBuildKeys) {
     const configured = vars?.[key];
     if (typeof configured !== 'string' || !configured.trim()) throw new Error(`Production build requires ${key} in wrangler.toml [vars].`);
-    // Preserve explicit Cloudflare build settings; existing launch checks validate bad overrides.
-    if (result[key] === undefined) result[key] = configured.trim();
+    // Indexing follows the requested repository release setting; preserve every other override.
+    if (key === 'PUBLIC_ALLOW_INDEXING' || result[key] === undefined) result[key] = configured.trim();
   }
   return result;
 }

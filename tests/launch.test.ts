@@ -74,9 +74,11 @@ test('Cloudflare route and static build declarations match the real handler', as
   assert.match(production,/PUBLIC_DEPLOYMENT_ENV\s*=\s*"production"/);
   assert.match(production,/PUBLIC_FORM_ENABLED\s*=\s*"true"/);
   assert.match(production,/PUBLIC_TURNSTILE_SITE_KEY\s*=\s*"0x4AAAAAAFxSr9EAi6JGFWTA"/);
+  assert.match(production,/PUBLIC_ALLOW_INDEXING\s*=\s*"true"/);
   assert.match(preview,/INQUIRIES_ENABLED\s*=\s*"false"/);
   assert.match(preview,/PUBLIC_FORM_ENABLED\s*=\s*"false"/);
   assert.match(preview,/PUBLIC_TURNSTILE_SITE_KEY\s*=\s*""/);
+  assert.match(preview,/PUBLIC_ALLOW_INDEXING\s*=\s*"false"/);
   assert.deepEqual(routes.include,['/api/*']);
   const {onRequest} = await import('../functions/api/walkthrough.ts');
   const response = await onRequest({request:new Request('https://fenrir.example.test/api/walkthrough',{method:'POST'}),env:{}});
