@@ -1,8 +1,31 @@
 import { fieldNames, labels, validateInquiry, type Errors } from '../lib/inquiry';
 
 declare global { interface Window { turnstile?: { reset: () => void } } }
-const form = document.querySelector<HTMLFormElement>('#walkthrough-form');
-if (form?.dataset.enabled === 'true') {
+async function initializeWalkthrough() {
+  const form = document.querySelector<HTMLFormElement>('#walkthrough-form');
+  if (!form) return;
+  if (form.dataset.enabled !== 'true' && form.dataset.runtimeConfig === 'true') {
+    try {
+      const response = await fetch('/api/walkthrough/config', { cache: 'no-store', signal: AbortSignal.timeout(7000) });
+      if (!response.ok) return;
+      const config = await response.json();
+      if (config.enabled !== true || typeof config.siteKey !== 'string' || !config.siteKey.trim()) return;
+      const widget = form.querySelector<HTMLElement>('.cf-turnstile')!;
+      widget.dataset.sitekey = config.siteKey;
+      form.querySelector<HTMLElement>('.turnstile-wrapper')!.hidden = false;
+      form.action = '/api/walkthrough';
+      form.dataset.enabled = 'true';
+      form.querySelectorAll<HTMLFieldSetElement>('fieldset').forEach(fieldset => { fieldset.disabled = false; });
+      const fallback = form.querySelector<HTMLElement>('.form-unavailable');
+      if (fallback) fallback.hidden = true;
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+      script.async = true;
+      script.defer = true;
+      document.head.append(script);
+    } catch { return; } // Keep the phone fallback when runtime configuration is unavailable.
+  }
+  if (form.dataset.enabled !== 'true') return;
   const status = document.querySelector<HTMLElement>('#form-status')!;
   const button = form.querySelector<HTMLButtonElement>('[type=submit]')!;
   button.disabled = false;
@@ -59,3 +82,4 @@ if (form?.dataset.enabled === 'true') {
     }
   });
 }
+void initializeWalkthrough();

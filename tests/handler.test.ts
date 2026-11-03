@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { handleWalkthrough, type FormEnvironment } from '../server/walkthrough.ts';
+import { handleWalkthrough, walkthroughConfiguration, type FormEnvironment } from '../server/walkthrough.ts';
 import { validateInquiry } from '../src/lib/inquiry.ts';
 const env: FormEnvironment = { INQUIRIES_ENABLED: 'true', SITE_ORIGIN: 'https://fenrir.example.test', TURNSTILE_SECRET_KEY: 'server-secret', RESEND_API_KEY: 'email-secret', INQUIRY_FROM: 'Fenrir <inquiry@example.test>', INQUIRY_TO: 'owner@example.test' };
 const valid = { contactName: 'Test Contact', businessName: 'Test Office', town: 'Bailey', email: 'contact@example.test', phone: '', startedAt: Date.now() - 5000, requestId: 'aa328891-d61c-4ac8-b7f1-a132c09db9e4', turnstileToken: 'test-token', website: '' };
@@ -71,3 +71,21 @@ test('malformed, oversized, non-JSON, and unsupported method requests are reject
   assert.equal((await handleWalkthrough(request({ message: 'x'.repeat(15000) }), env)).status, 413);
 });
 test('production rejects known Turnstile test secrets', async () => { assert.equal((await handleWalkthrough(request(), { ...env, TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA' })).status, 503); });
+
+test('runtime configuration returns only the public widget key with no caching', async () => {
+  const configurationRequest = new Request(`${env.SITE_ORIGIN}/api/walkthrough/config`);
+  for (const name of ['PUBLIC_TURNSTILE_SITE_KEY', 'TURNSTILE_SITE_KEY']) {
+    const response = walkthroughConfiguration(configurationRequest, { ...env, [name]: 'production-public-key' });
+    assert.deepEqual(await response.json(), { enabled: true, siteKey: 'production-public-key' });
+    assert.equal(response.headers.get('Cache-Control'), 'no-store');
+  }
+});
+
+test('runtime activation stays off for missing configuration, previews, other origins and test keys', async () => {
+  const configurationRequest = new Request(`${env.SITE_ORIGIN}/api/walkthrough/config`);
+  const configured = { ...env, PUBLIC_TURNSTILE_SITE_KEY: 'production-public-key' };
+  for (const overrides of [{ PUBLIC_TURNSTILE_SITE_KEY: '' }, { INQUIRIES_ENABLED: 'false' }, { RESEND_API_KEY: '' }, { TURNSTILE_SECRET_KEY: '' }, { INQUIRY_TO: '' }, { SITE_ORIGIN: 'https://elsewhere.example.test' }, { PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA' }]) {
+    assert.deepEqual(await walkthroughConfiguration(configurationRequest, { ...configured, ...overrides }).json(), { enabled: false });
+  }
+  assert.equal(walkthroughConfiguration(new Request(configurationRequest.url, { method: 'POST' }), configured).status, 405);
+});

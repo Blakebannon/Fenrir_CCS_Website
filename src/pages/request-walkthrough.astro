@@ -9,7 +9,7 @@ const enabled = business.form.enabled;
 <Layout title="Request a Walkthrough | Fenrir Commercial Cleaning Service" description="Tell Blake about your workplace in Bailey, Conifer, or Evergreen. Start a conversation about a tailored commercial cleaning scope and schedule.">
   <section class="page-intro request-intro container"><p class="eyebrow">A conversation about your workplace</p><h1>A fresh start,<br/><em>with a clear plan.</em></h1><p class="intro-lead">Tell us a little about your space. We’ll talk through your needs and arrange a walkthrough together.</p><CommercialOnly/></section>
   <div class="request-layout container">
-    <form id="walkthrough-form" class="inquiry-form" data-enabled={String(enabled)} action={enabled ? business.form.endpoint : undefined} method="post" novalidate>
+    <form id="walkthrough-form" class="inquiry-form" data-enabled={String(enabled)} data-runtime-config={String(Boolean(business.seo.siteUrl))} action={enabled ? business.form.endpoint : undefined} method="post" novalidate>
       {!enabled && <div class="form-unavailable"><p><strong>Request your walkthrough by phone.</strong></p>{business.phone || business.email ? <p>Contact Blake to discuss your space and arrange a time. {business.phone && <a href={business.phoneHref}>Call {business.phone}</a>} {business.email && <a href={`mailto:${business.email}`}>{business.email}</a>}</p> : <p>If you have Blake’s business card, please use the contact details on it to get in touch.</p>}<p>Online requests are not available yet. Here are the details we’ll discuss when we connect.</p></div>}
       {enabled && <noscript><div class="no-js">Online inquiries need JavaScript to submit securely. {business.phone && <a href={business.phoneHref}>Call Blake</a>} {business.email && <a href={`mailto:${business.email}`}>Email Blake</a>} to discuss your space.</div></noscript>}
       <div id="form-status" class="form-status" role="status" aria-live="polite" tabindex="-1"></div>
@@ -31,7 +31,7 @@ const enabled = business.form.enabled;
           <div class="field full"><label for="message">Your space and needs <span class="optional">Optional</span></label><textarea id="message" name="message" rows="4" maxlength="2000" aria-describedby="message-hint message-error"></textarea><span class="field-hint" id="message-hint">A short description is plenty. Please leave out keys, alarm codes, payment details, and sensitive building information.</span><span id="message-error" class="field-error"></span></div>
         </div></fieldset>
         <div class="honey-field" aria-hidden="true"><label for="website">Leave this field empty</label><input id="website" name="website" tabindex="-1" autocomplete="off"/></div>
-        {enabled && <div class="turnstile-wrapper"><div class="cf-turnstile" data-sitekey={business.form.turnstileSiteKey} data-action="request_walkthrough" data-theme="light" data-size="flexible"></div></div>}
+        <div class="turnstile-wrapper" hidden={!enabled}><div class="cf-turnstile" data-sitekey={business.form.turnstileSiteKey} data-action="request_walkthrough" data-theme="light" data-size="flexible"></div></div>
         <p class="privacy-note">We’ll use your details to respond to this inquiry and discuss your cleaning needs. No marketing signup. <a href="/privacy">Read our privacy information.</a></p>
         <button class="button form-submit" type="submit" disabled>Send Walkthrough Request <Arrow/></button>
         <p class="form-note">A request starts a conversation. Your walkthrough time is agreed directly with Blake.</p>

@@ -22,7 +22,7 @@ Open **http://127.0.0.1:4173**. Development: `npm.cmd run dev`, then open its pr
 
 Phone contact uses `tel:+13035134389`. Recurring service generally runs one to three visits per week. Pricing is per visit after a walkthrough, considering cleanable square footage, frequency, condition and agreed scope. A written scope and quote precede work.
 
-The owner confirmed the live website is **https://fenrircleaningservice.com**, hosted on Cloudflare, with email and spam-protection credentials configured there. Production inquiries are enabled in `wrangler.toml`; Cloudflare builds of `main` default to the production environment and enable the form when `PUBLIC_TURNSTILE_SITE_KEY` is configured. An explicit `PUBLIC_FORM_ENABLED=false` or `PUBLIC_DEPLOYMENT_ENV=local` in Cloudflare still disables it. Indexing remains off by default. Local review and branch previews keep submissions disabled. Real inbox receipt must be checked separately; configured keys are not stored in this repository.
+The owner confirmed the live website is **https://fenrircleaningservice.com**, hosted on Cloudflare, with email and spam-protection credentials configured there. Production inquiries are enabled in `wrangler.toml`; Cloudflare builds of `main` default to the production environment and enable the form when `PUBLIC_TURNSTILE_SITE_KEY` is configured. Public build overrides control the initial markup; the runtime configuration below can activate a page built without the public key. Set `INQUIRIES_ENABLED=false` to disable the receiver and runtime activation. Indexing remains off by default. Local review and branch previews keep submissions disabled. Real inbox receipt must be checked separately; configured keys are not stored in this repository.
 
 Cleaning-specific insurance is being arranged. No insurance, bonding, licensing, certification, customer, review or operating-history claims are configured. The logos and owner portrait supplied in `Logo_and_Owner/` are applied across the website. See [asset records](docs/ASSETS.md).
 
@@ -39,6 +39,8 @@ Cleaning-specific insurance is being arranged. No insurance, bonding, licensing,
 Copy sanitized `.env.example` to ignored `.env` only when configuring a build. Public variables are `PUBLIC_DEPLOYMENT_ENV`, `PUBLIC_SITE_URL`, `PUBLIC_ALLOW_INDEXING`, `PUBLIC_BUSINESS_PHONE`, `PUBLIC_BUSINESS_EMAIL`, `PUBLIC_FORM_ENABLED` and `PUBLIC_TURNSTILE_SITE_KEY`. The confirmed phone is the default; unverified contact values stay empty.
 
 Server bindings are `INQUIRIES_ENABLED`, `SITE_ORIGIN`, `TURNSTILE_SECRET_KEY`, `RESEND_API_KEY`, `INQUIRY_FROM` and `INQUIRY_TO`. Private values belong in Cloudflare secrets or ignored `.dev.vars` for local Functions testing, never public-prefixed variables. The production runtime switch is true and its origin is `https://fenrircleaningservice.com`; preview stays false. Astro preview serves static pages and does not emulate Functions.
+
+The live form can also activate from Cloudflare runtime settings when its public key was unavailable during the static build. `GET /api/walkthrough/config` returns only readiness and the public `PUBLIC_TURNSTILE_SITE_KEY` (or `TURNSTILE_SITE_KEY` alias), after checking that receiving is enabled and configured for the request's origin. The browser then enables the fields and loads Turnstile. Missing configuration retains the phone fallback; email credentials and recipient details are never returned.
 
 ## Verification
 

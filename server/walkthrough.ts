@@ -7,9 +7,29 @@ export interface FormEnvironment {
   RESEND_API_KEY?: string;
   INQUIRY_FROM?: string;
   INQUIRY_TO?: string;
+  PUBLIC_TURNSTILE_SITE_KEY?: string;
+  TURNSTILE_SITE_KEY?: string;
 }
 interface Dependencies { fetch?: typeof fetch; now?: () => number }
 const reply = (status: number, body: Record<string, unknown>) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } });
+
+function configuredOrigin(env: FormEnvironment): URL | undefined {
+  if (env.INQUIRIES_ENABLED !== 'true') return;
+  let origin: URL;
+  try { origin = new URL(env.SITE_ORIGIN || ''); } catch { return; }
+  const local = ['127.0.0.1', 'localhost'].includes(origin.hostname);
+  if ((!local && origin.protocol !== 'https:') || !env.TURNSTILE_SECRET_KEY || !env.RESEND_API_KEY || !env.INQUIRY_FROM || !env.INQUIRY_TO || (!local && /^[123]x000000/.test(env.TURNSTILE_SECRET_KEY))) return;
+  return origin;
+}
+
+/** Only the public widget key is returned; delivery credentials stay server-side. */
+export function walkthroughConfiguration(request: Request, env: FormEnvironment): Response {
+  if (request.method !== 'GET') return reply(405, { enabled: false });
+  const origin = configuredOrigin(env);
+  const siteKey = (env.PUBLIC_TURNSTILE_SITE_KEY || env.TURNSTILE_SITE_KEY || '').trim();
+  if (!origin || new URL(request.url).origin !== origin.origin || !siteKey || (!['127.0.0.1', 'localhost'].includes(origin.hostname) && /^[123]x000000/.test(siteKey))) return reply(200, { enabled: false });
+  return reply(200, { enabled: true, siteKey });
+}
 
 async function readBody(request: Request): Promise<string> {
   if (Number(request.headers.get('content-length')) > 14000) throw new Error('too-large');
@@ -33,11 +53,8 @@ export async function handleWalkthrough(request: Request, env: FormEnvironment, 
   const send = dependencies.fetch || fetch;
   const now = dependencies.now || Date.now;
   if (request.method !== 'POST') return reply(405, { message: 'Please submit a walkthrough request using the form.' });
-  if (env.INQUIRIES_ENABLED !== 'true') return reply(503, { message: 'Online inquiries are currently unavailable. Please use the direct contact details if shown.' });
-  let origin: URL;
-  try { origin = new URL(env.SITE_ORIGIN || ''); } catch { return reply(503, { message: 'Online inquiries are currently unavailable. Please use the direct contact details if shown.' }); }
-  const local = ['127.0.0.1', 'localhost'].includes(origin.hostname);
-  if ((!local && origin.protocol !== 'https:') || !env.TURNSTILE_SECRET_KEY || !env.RESEND_API_KEY || !env.INQUIRY_FROM || !env.INQUIRY_TO || (!local && /^[123]x000000/.test(env.TURNSTILE_SECRET_KEY))) return reply(503, { message: 'Online inquiries are currently unavailable. Please use the direct contact details if shown.' });
+  const origin = configuredOrigin(env);
+  if (!origin) return reply(503, { message: 'Online inquiries are currently unavailable. Please use the direct contact details if shown.' });
   if (request.headers.get('origin') !== origin.origin) return reply(403, { message: 'Please reload the website and try again.' });
   if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return reply(415, { message: 'Please submit using the website form.' });
   let raw: Record<string, unknown>;

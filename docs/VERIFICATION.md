@@ -1,4 +1,10 @@
-# Verification report — November 2, 2026
+# Verification report — November 3, 2026
+
+## Runtime form activation
+
+After the owner updated Cloudflare, a live empty validation-only POST returned 422 with required-field errors, confirming the receiver was configured and enabled; the page still rendered disabled fields and no widget. No inquiry or email was sent. The website now supports fetching public widget configuration at runtime and enabling the form when the configured canonical receiver is ready. The endpoint returns only readiness and the public site key; no email credentials or recipient details are exposed. Missing runtime configuration preserves phone contact. The earlier build-time activation and historical evidence below are retained for context.
+
+Validation passed: 25 unit tests, Astro/server type checks, production and isolated QA builds, public-output audit, and compilation of both Cloudflare routes. Nine desktop/tablet/phone browser checks passed, including activation without a build-time key, disabled-runtime fallback, accessibility, field validation, delivery failure recovery and controlled HTTP acceptance. These use synthetic test providers and do not establish real inbox delivery.
 
 ## Production contact-form activation
 

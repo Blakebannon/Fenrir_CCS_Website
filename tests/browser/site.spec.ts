@@ -54,6 +54,33 @@ test('phone fallback works while unconfigured online submission stays disabled',
   await expect(page.locator('.form-unavailable a[href="tel:+13035134389"]')).toBeVisible();
   await expect(page.locator('script[src*="cloudflare"]')).toHaveCount(0);
 });
+test('runtime settings activate a form built without a public key and retain the phone fallback when disabled', async ({ page }) => {
+  await page.route(/^http:\/\/127\.0\.0\.1:4173\/request-walkthrough\/?$/, async route => {
+    const response = await route.fetch();
+    const html = await response.text();
+    expect(html).toContain('data-runtime-config="false"');
+    await route.fulfill({ response, body: html.replace('data-runtime-config="false"', 'data-runtime-config="true"') });
+  });
+  let runtimeEnabled = true;
+  await page.route('**/api/walkthrough/config', route => route.fulfill({ json: runtimeEnabled ? { enabled: true, siteKey: 'runtime-public-key' } : { enabled: false } }));
+  await page.route('https://challenges.cloudflare.com/turnstile/v0/api.js', route => route.fulfill({ contentType: 'text/javascript', body: 'window.turnstile={reset(){}};' }));
+  await page.goto('/request-walkthrough');
+  await expect(page.locator('form')).toHaveAttribute('data-enabled', 'true');
+  await expect(page.locator('form')).toHaveAttribute('action', '/api/walkthrough');
+  await expect(page.locator('#contactName')).toBeEnabled();
+  await expect(page.locator('.form-unavailable')).toBeHidden();
+  await expect(page.locator('.cf-turnstile')).toHaveAttribute('data-sitekey', 'runtime-public-key');
+  await expect(page.locator('.turnstile-wrapper')).toBeVisible();
+  await page.getByRole('button', { name: 'Send Walkthrough Request' }).click();
+  await expect(page.locator('#form-status')).toContainText('Please check');
+  expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations).toEqual([]);
+  runtimeEnabled = false;
+  await page.reload();
+  await expect(page.locator('form')).toHaveAttribute('data-enabled', 'false');
+  await expect(page.locator('#contactName')).toBeDisabled();
+  await expect(page.locator('.form-unavailable')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Send Walkthrough Request' })).toHaveCount(0);
+});
 test('form validation, failed receiver preserves data, successful HTTP acceptance', async ({ page, request }, info) => {
   // Deterministic widget substitute only for the isolated QA build and loopback receiver.
   await page.route('https://challenges.cloudflare.com/turnstile/v0/api.js', route => route.fulfill({ contentType:'text/javascript', body: `const widget=document.querySelector('.cf-turnstile');const token=document.createElement('input');token.type='hidden';token.name='cf-turnstile-response';token.value='controlled-token';widget.append(token);window.turnstile={reset:()=>{token.value='controlled-token'}};` }));
