@@ -25,6 +25,8 @@ For full Cloudflare local runtime verification after installing Wrangler: build,
 
 ### Runtime activation
 
+When runtime receiving is unavailable, the configuration response may include `missingSettings`, containing only the names of absent settings. It never includes private values or email addresses. Restore those settings in Cloudflare Production; private values belong in encrypted Secrets so Wrangler's public variable configuration cannot replace them.
+
 The form can load its public configuration from `GET /api/walkthrough/config` when the static build did not enable it. Cloudflare's runtime must have `PUBLIC_TURNSTILE_SITE_KEY` or `TURNSTILE_SITE_KEY` containing the public widget key, alongside the existing receiver configuration. This read-only response contains only `{ enabled: true, siteKey }`, or `{ enabled: false }`, and uses `Cache-Control: no-store`. It does not disclose provider keys, the Turnstile secret, or sender/recipient addresses. The runtime switch and canonical origin must match before activation; previews stay disabled. POST validation and server-side Turnstile verification still apply to every submission.
 
 ### Inquiry payload

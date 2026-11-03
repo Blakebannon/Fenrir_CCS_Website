@@ -85,7 +85,16 @@ test('runtime activation stays off for missing configuration, previews, other or
   const configurationRequest = new Request(`${env.SITE_ORIGIN}/api/walkthrough/config`);
   const configured = { ...env, PUBLIC_TURNSTILE_SITE_KEY: 'production-public-key' };
   for (const overrides of [{ PUBLIC_TURNSTILE_SITE_KEY: '' }, { INQUIRIES_ENABLED: 'false' }, { RESEND_API_KEY: '' }, { TURNSTILE_SECRET_KEY: '' }, { INQUIRY_TO: '' }, { SITE_ORIGIN: 'https://elsewhere.example.test' }, { PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA' }]) {
-    assert.deepEqual(await walkthroughConfiguration(configurationRequest, { ...configured, ...overrides }).json(), { enabled: false });
+    const body = await walkthroughConfiguration(configurationRequest, { ...configured, ...overrides }).json();
+    assert.equal(body.enabled, false);
+    assert.equal(JSON.stringify(body).includes('server-secret'), false);
+    assert.equal(JSON.stringify(body).includes('email-secret'), false);
   }
   assert.equal(walkthroughConfiguration(new Request(configurationRequest.url, { method: 'POST' }), configured).status, 405);
+});
+
+test('runtime configuration identifies missing setting names without exposing any private values', async () => {
+  const configurationRequest = new Request(`${env.SITE_ORIGIN}/api/walkthrough/config`);
+  const response = walkthroughConfiguration(configurationRequest, { ...env, PUBLIC_TURNSTILE_SITE_KEY: 'public-key', INQUIRY_FROM: '', INQUIRY_TO: '' });
+  assert.deepEqual(await response.json(), { enabled: false, missingSettings: ['INQUIRY_FROM', 'INQUIRY_TO'] });
 });

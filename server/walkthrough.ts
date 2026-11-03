@@ -27,7 +27,15 @@ export function walkthroughConfiguration(request: Request, env: FormEnvironment)
   if (request.method !== 'GET') return reply(405, { enabled: false });
   const origin = configuredOrigin(env);
   const siteKey = (env.PUBLIC_TURNSTILE_SITE_KEY || env.TURNSTILE_SITE_KEY || '').trim();
-  if (!origin || new URL(request.url).origin !== origin.origin || !siteKey || (!['127.0.0.1', 'localhost'].includes(origin.hostname) && /^[123]x000000/.test(siteKey))) return reply(200, { enabled: false });
+  if (!origin) {
+    const missingSettings = ['SITE_ORIGIN', 'TURNSTILE_SECRET_KEY', 'RESEND_API_KEY', 'INQUIRY_FROM', 'INQUIRY_TO'].filter(name => !env[name as keyof FormEnvironment]);
+    if (env.INQUIRIES_ENABLED !== 'true') missingSettings.unshift('INQUIRIES_ENABLED');
+    // Names only: never return private values, sender addresses, or recipient addresses.
+    return reply(200, { enabled: false, missingSettings });
+  }
+  if (new URL(request.url).origin !== origin.origin) return reply(200, { enabled: false });
+  if (!siteKey) return reply(200, { enabled: false, missingSettings: ['PUBLIC_TURNSTILE_SITE_KEY'] });
+  if (!['127.0.0.1', 'localhost'].includes(origin.hostname) && /^[123]x000000/.test(siteKey)) return reply(200, { enabled: false });
   return reply(200, { enabled: true, siteKey });
 }
 

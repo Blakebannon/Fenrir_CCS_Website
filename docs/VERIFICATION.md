@@ -2,6 +2,8 @@
 
 ## Approved production public key wired into the build
 
+Cloudflare successfully deployed commit `fc82c6d`. A live read confirmed the approved key, enabled form, zero disabled fieldsets and the Turnstile script. A subsequent empty validation-only POST returned 503, so runtime receiving was not declared working. The configuration endpoint now reports missing setting names only, to identify the remaining Cloudflare runtime binding without exposing private values. No real inquiry was sent.
+
 The owner supplied `PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAFxSr9EAi6JGFWTA`. The production `[vars]` table now contains that public value plus `PUBLIC_DEPLOYMENT_ENV=production` and `PUBLIC_FORM_ENABLED=true`. Existing `INQUIRIES_ENABLED=true` and `SITE_ORIGIN=https://fenrircleaningservice.com` are preserved. Preview explicitly keeps both flags false and its public key blank. No private credential or `TURNSTILE_SECRET_KEY` value was changed.
 
 `npm run build` now launches Astro through a wrapper that parses Wrangler TOML and supplies only the three public build defaults when absent from the production build environment. This is an explicit build-time bridge, independent of Function bindings. Other production variables and explicit overrides are preserved, and invalid/blank overrides still fail the existing launch checks. The TOML parser was already installed transitively; it is now declared directly without changing its resolved version.
