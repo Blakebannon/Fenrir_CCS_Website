@@ -71,7 +71,12 @@ test('Cloudflare route and static build declarations match the real handler', as
   const preview = config.split('[env.preview.vars]')[1];
   assert.match(production,/INQUIRIES_ENABLED\s*=\s*"true"/);
   assert.match(production,/SITE_ORIGIN\s*=\s*"https:\/\/fenrircleaningservice\.com"/);
+  assert.match(production,/PUBLIC_DEPLOYMENT_ENV\s*=\s*"production"/);
+  assert.match(production,/PUBLIC_FORM_ENABLED\s*=\s*"true"/);
+  assert.match(production,/PUBLIC_TURNSTILE_SITE_KEY\s*=\s*"0x4AAAAAAFxSr9EAi6JGFWTA"/);
   assert.match(preview,/INQUIRIES_ENABLED\s*=\s*"false"/);
+  assert.match(preview,/PUBLIC_FORM_ENABLED\s*=\s*"false"/);
+  assert.match(preview,/PUBLIC_TURNSTILE_SITE_KEY\s*=\s*""/);
   assert.deepEqual(routes.include,['/api/*']);
   const {onRequest} = await import('../functions/api/walkthrough.ts');
   const response = await onRequest({request:new Request('https://fenrir.example.test/api/walkthrough',{method:'POST'}),env:{}});

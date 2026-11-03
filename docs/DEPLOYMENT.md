@@ -6,17 +6,17 @@ Pages project: **fenrir-ccs-website**, GitHub repository **Blakebannon/Fenrir_CC
 
 | Setting | Required production value | Read when / configured in |
 |---|---|---|
-| PUBLIC_DEPLOYMENT_ENV | production | Astro build; Pages Settings > Variables and Secrets > Production |
-| PUBLIC_FORM_ENABLED | true | Astro build; same Production variables section |
-| PUBLIC_TURNSTILE_SITE_KEY | The real public site key for the domain's Turnstile widget | Astro build; same Production variables section, as a plain-text variable |
+| PUBLIC_DEPLOYMENT_ENV | production | wrangler.toml `[vars]`; explicitly copied into Astro by the build wrapper |
+| PUBLIC_FORM_ENABLED | true | wrangler.toml `[vars]`; explicitly copied into Astro by the build wrapper |
+| PUBLIC_TURNSTILE_SITE_KEY | 0x4AAAAAAFxSr9EAi6JGFWTA | wrangler.toml `[vars]`; explicitly copied into Astro by the build wrapper |
 | INQUIRIES_ENABLED | true | Pages Function runtime; tracked top-level `[vars]` in wrangler.toml |
 | SITE_ORIGIN | https://fenrircleaningservice.com | Pages Function runtime; tracked top-level `[vars]` in wrangler.toml |
 
-The public site key and `TURNSTILE_SECRET_KEY` are different values. Configuring the secret for the Function does not populate Astro's public build variable. Runtime `vars` in Wrangler do not supply Astro build inputs. Private `RESEND_API_KEY`, `INQUIRY_FROM`, `INQUIRY_TO`, and `TURNSTILE_SECRET_KEY` stay in Cloudflare. There is no production override of the tracked runtime switch; `[env.preview.vars]` explicitly sets it false.
+The public site key and `TURNSTILE_SECRET_KEY` are different values. Runtime `vars` do not automatically become Astro build inputs. The `npm run build` command now calls `scripts/build-site.ts`, which parses the production `[vars]` table and copies only the three public settings above into Astro's child-process environment. It applies to Cloudflare main and explicit local production-context builds. It does not inject production defaults into local review, QA, or preview builds. Existing Cloudflare build variables are preserved; an explicit incorrect/blank override still fails the existing launch checks. Normally no separate Cloudflare public build setting is required. Private `RESEND_API_KEY`, `INQUIRY_FROM`, `INQUIRY_TO`, and `TURNSTILE_SECRET_KEY` stay unchanged in Cloudflare. The preview runtime switch remains false, with the public key explicitly blank.
 
 Previously, an empty public key made `formEnabled` false without failing the production build. This rendered disabled fieldsets, hid the submit button through CSS, omitted the widget script, and left the phone fallback visible. Runtime activation also requires a public widget key. Production builds requesting the form now fail with a specific setting error when that key is blank. A local/preview/QA marker or `PUBLIC_FORM_ENABLED=false` on Cloudflare main also fails explicitly; actual preview branches are still forced off. The QA build clears inherited Cloudflare branch markers before its isolated test build.
 
-`npm run check:production` verifies real generated production and preview HTML and rejects a missing-key production build using synthetic public inputs in ignored `.cache` output. A successful build is not evidence of inbox delivery.
+`npm run check:production` runs the build wrapper without public environment inputs and confirms that the generated production HTML contains the real approved public key, enabled fields, the submission action, and the Turnstile script. It also verifies disabled previews and rejection of an explicitly blank production key. Output is ignored in `.cache`; no private keys or provider calls are used. A successful build is not evidence of inbox delivery.
 
 The owner confirmed the live Cloudflare site at `https://fenrircleaningservice.com` and existing production email/Turnstile credentials. The requested source activation enables production inquiries and supplies that origin. Cloudflare `main` builds default to production and enable the public form when the public Turnstile key exists; `PUBLIC_FORM_ENABLED=false` and `PUBLIC_DEPLOYMENT_ENV=local` remain explicit overrides that must be removed or changed in Cloudflare if present. Other branch builds remain disabled previews. Earlier setup guidance below is retained for maintaining the deployment.
 

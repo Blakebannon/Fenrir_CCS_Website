@@ -1,5 +1,13 @@
 # Verification report — November 3, 2026
 
+## Approved production public key wired into the build
+
+The owner supplied `PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAFxSr9EAi6JGFWTA`. The production `[vars]` table now contains that public value plus `PUBLIC_DEPLOYMENT_ENV=production` and `PUBLIC_FORM_ENABLED=true`. Existing `INQUIRIES_ENABLED=true` and `SITE_ORIGIN=https://fenrircleaningservice.com` are preserved. Preview explicitly keeps both flags false and its public key blank. No private credential or `TURNSTILE_SECRET_KEY` value was changed.
+
+`npm run build` now launches Astro through a wrapper that parses Wrangler TOML and supplies only the three public build defaults when absent from the production build environment. This is an explicit build-time bridge, independent of Function bindings. Other production variables and explicit overrides are preserved, and invalid/blank overrides still fail the existing launch checks. The TOML parser was already installed transitively; it is now declared directly without changing its resolved version.
+
+The actual production-context `npm run build`, with all three public inputs absent, was checked for the approved key, `data-enabled="true"`, the `/api/walkthrough` action, enabled fieldsets and the Turnstile script. All 29 unit tests, real production/preview build checks, type checks, Function bundles, public-output audit, and three desktop/tablet/phone controlled submission checks pass. No real inquiry was sent; inbox delivery remains unverified.
+
 ## Production diagnosis after GitHub connection repair
 
 Inspected base `098eabb` and the successful Cloudflare Pages check for project `fenrir-ccs-website`. The live page rendered `data-enabled="false"`, `data-runtime-config="true"`, an empty public widget key and two disabled fieldsets. Its runtime configuration endpoint returned `{ enabled: false }`. An empty same-origin POST returned 422 with required-field errors, proving the receiver's enablement/origin/credential-presence checks passed. It did not call Turnstile or Resend, and it did not send email. Inbox delivery remains unverified; domain verification and configured private keys are owner-reported facts.

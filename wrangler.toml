@@ -1,10 +1,17 @@
 name = "fenrir-ccs-website"
 pages_build_output_dir = "./dist"
 compatibility_date = "2026-11-01"
-# Credentials and destination go in Cloudflare's environment settings, never here.
+# Public configuration only. Private credentials remain in Cloudflare.
 [vars]
 INQUIRIES_ENABLED = "true"
 SITE_ORIGIN = "https://fenrircleaningservice.com"
+# npm run build explicitly copies these public defaults into Astro's environment.
+PUBLIC_DEPLOYMENT_ENV = "production"
+PUBLIC_FORM_ENABLED = "true"
+PUBLIC_TURNSTILE_SITE_KEY = "0x4AAAAAAFxSr9EAi6JGFWTA"
 [env.preview.vars]
 INQUIRIES_ENABLED = "false"
 SITE_ORIGIN = "https://fenrircleaningservice.com"
+PUBLIC_DEPLOYMENT_ENV = "preview"
+PUBLIC_FORM_ENABLED = "false"
+PUBLIC_TURNSTILE_SITE_KEY = ""
