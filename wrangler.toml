@@ -1,4 +1,4 @@
-name = "fenrir-commercial-cleaning-service"
+name = "fenrir-ccs-website"
 pages_build_output_dir = "./dist"
 compatibility_date = "2026-11-01"
 # Credentials and destination go in Cloudflare's environment settings, never here.

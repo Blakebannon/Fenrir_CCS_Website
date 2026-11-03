@@ -13,6 +13,7 @@
     "qa:build": "node scripts/qa-build.mjs",
     "qa:serve": "node --experimental-strip-types scripts/qa-server.ts",
     "check:function": "node scripts/check-function.mjs",
+    "check:production": "node scripts/check-production-build.mjs",
     "check:secrets": "node scripts/check-staged-secrets.mjs"
   },
   "dependencies": {

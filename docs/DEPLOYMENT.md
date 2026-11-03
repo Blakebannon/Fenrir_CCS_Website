@@ -1,5 +1,23 @@
 # Cloudflare deployment and production contact form
 
+## Production form configuration
+
+Pages project: **fenrir-ccs-website**, GitHub repository **Blakebannon/Fenrir_CCS_Website**, production branch **main**. `wrangler.toml` uses this project name.
+
+| Setting | Required production value | Read when / configured in |
+|---|---|---|
+| PUBLIC_DEPLOYMENT_ENV | production | Astro build; Pages Settings > Variables and Secrets > Production |
+| PUBLIC_FORM_ENABLED | true | Astro build; same Production variables section |
+| PUBLIC_TURNSTILE_SITE_KEY | The real public site key for the domain's Turnstile widget | Astro build; same Production variables section, as a plain-text variable |
+| INQUIRIES_ENABLED | true | Pages Function runtime; tracked top-level `[vars]` in wrangler.toml |
+| SITE_ORIGIN | https://fenrircleaningservice.com | Pages Function runtime; tracked top-level `[vars]` in wrangler.toml |
+
+The public site key and `TURNSTILE_SECRET_KEY` are different values. Configuring the secret for the Function does not populate Astro's public build variable. Runtime `vars` in Wrangler do not supply Astro build inputs. Private `RESEND_API_KEY`, `INQUIRY_FROM`, `INQUIRY_TO`, and `TURNSTILE_SECRET_KEY` stay in Cloudflare. There is no production override of the tracked runtime switch; `[env.preview.vars]` explicitly sets it false.
+
+Previously, an empty public key made `formEnabled` false without failing the production build. This rendered disabled fieldsets, hid the submit button through CSS, omitted the widget script, and left the phone fallback visible. Runtime activation also requires a public widget key. Production builds requesting the form now fail with a specific setting error when that key is blank. A local/preview/QA marker or `PUBLIC_FORM_ENABLED=false` on Cloudflare main also fails explicitly; actual preview branches are still forced off. The QA build clears inherited Cloudflare branch markers before its isolated test build.
+
+`npm run check:production` verifies real generated production and preview HTML and rejects a missing-key production build using synthetic public inputs in ignored `.cache` output. A successful build is not evidence of inbox delivery.
+
 The owner confirmed the live Cloudflare site at `https://fenrircleaningservice.com` and existing production email/Turnstile credentials. The requested source activation enables production inquiries and supplies that origin. Cloudflare `main` builds default to production and enable the public form when the public Turnstile key exists; `PUBLIC_FORM_ENABLED=false` and `PUBLIC_DEPLOYMENT_ENV=local` remain explicit overrides that must be removed or changed in Cloudflare if present. Other branch builds remain disabled previews. Earlier setup guidance below is retained for maintaining the deployment.
 
 ## Structure confirmed locally
@@ -20,11 +38,11 @@ The entry point is type-checked, invoked by tests, and bundled by `node scripts/
 - Root directory: this repository root, including both src/ and functions/.
 - Install from package-lock.json. Build: **npm run build**. Output: **dist**.
 - Pages V2 build system or later. Supported runtime: Node >=22.12.0, npm >=9.6.5. Local checks use Node 25.9.0 and npm 11.12.1. Recheck requirements when migrating dependencies; no migration is installed.
-- Choose the actual account, Pages project and production branch; align the provisional wrangler.toml name with that project.
+- Use Pages project `fenrir-ccs-website`, connected to `Blakebannon/Fenrir_CCS_Website` on `main`.
 - Use Git integration or Wrangler deployment from the repository root. Dashboard drag-and-drop of dist/ does **not** deploy Pages Functions.
 - Keep private source/review material private. Never add CRM files, policy certificates, .env files, .dev.vars*, private records or signing keys.
 
-Future deployment command, only after publication is authorized: `npx wrangler pages deploy dist --project-name <actual-project>`. No deployment command was run.
+The repaired Cloudflare GitHub integration deploys pushes to `main`. For an authorized manual deployment from the full repository, the project argument is `--project-name fenrir-ccs-website`.
 
 ## Public build variables
 

@@ -24,13 +24,23 @@ test('Cloudflare main enables the configured production form and other branches 
   assert.equal(production.siteUrl,'https://fenrircleaningservice.com');
   assert.equal(production.formEnabled,true);
   assert.equal(production.allowIndexing,false);
-  assert.equal(resolveLaunch({...configured,PUBLIC_FORM_ENABLED:'false'}).formEnabled,false);
-  assert.equal(resolveLaunch({...configured,PUBLIC_TURNSTILE_SITE_KEY:''}).formEnabled,false);
+  assert.throws(() => resolveLaunch({...configured,PUBLIC_FORM_ENABLED:'false'}),/Cloudflare main requires PUBLIC_FORM_ENABLED=true/);
+  assert.throws(() => resolveLaunch({...configured,PUBLIC_TURNSTILE_SITE_KEY:''}),/requires PUBLIC_TURNSTILE_SITE_KEY/);
   assert.throws(() => resolveLaunch({...configured,PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA'}),/production Turnstile/);
   const preview = resolveLaunch({...configured,CF_PAGES_BRANCH:'feature',PUBLIC_DEPLOYMENT_ENV:'production',PUBLIC_FORM_ENABLED:'true',PUBLIC_ALLOW_INDEXING:'true'});
   assert.equal(preview.environment,'preview');
   assert.equal(preview.formEnabled,false);
   assert.equal(preview.allowIndexing,false);
+});
+
+test('production activation fails clearly instead of silently rendering disabled fields', () => {
+  const configured = { CF_PAGES:'1', CF_PAGES_BRANCH:'main', PUBLIC_DEPLOYMENT_ENV:'production', PUBLIC_FORM_ENABLED:'true', PUBLIC_TURNSTILE_SITE_KEY:' production-key ' };
+  assert.equal(resolveLaunch(configured).siteKey,'production-key');
+  for (const key of ['', '   ']) assert.throws(() => resolveLaunch({...configured,PUBLIC_TURNSTILE_SITE_KEY:key}),/requires PUBLIC_TURNSTILE_SITE_KEY/);
+  for (const marker of ['local','preview','qa']) assert.throws(() => resolveLaunch({...configured,PUBLIC_DEPLOYMENT_ENV:marker}),/Cloudflare main requires PUBLIC_DEPLOYMENT_ENV=production/);
+  assert.throws(() => resolveLaunch({...configured,PUBLIC_FORM_ENABLED:'yes'}),/PUBLIC_FORM_ENABLED must be true or false/);
+  assert.equal(resolveLaunch({...configured,PUBLIC_FORM_ENABLED:' true '}).formEnabled,true);
+  assert.equal(resolveLaunch({...configured,CF_PAGES_BRANCH:'feature',PUBLIC_DEPLOYMENT_ENV:'production',PUBLIC_TURNSTILE_SITE_KEY:''}).formEnabled,false);
 });
 
 test('confirmed public phone is available without environment setup and uses international call URLs', () => {
@@ -56,6 +66,7 @@ test('unapproved, unverified and expired insurance/bonding claims remain unpubli
 test('Cloudflare route and static build declarations match the real handler', async () => {
   const config = await readFile('wrangler.toml','utf8'); const routes = JSON.parse(await readFile('public/_routes.json','utf8'));
   assert.match(config,/pages_build_output_dir\s*=\s*"\.\/dist"/);
+  assert.match(config,/^name\s*=\s*"fenrir-ccs-website"/);
   const production = config.split('[vars]')[1].split('[env.preview.vars]')[0];
   const preview = config.split('[env.preview.vars]')[1];
   assert.match(production,/INQUIRIES_ENABLED\s*=\s*"true"/);

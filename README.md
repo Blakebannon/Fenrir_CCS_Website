@@ -42,12 +42,15 @@ Server bindings are `INQUIRIES_ENABLED`, `SITE_ORIGIN`, `TURNSTILE_SECRET_KEY`, 
 
 The live form can also activate from Cloudflare runtime settings when its public key was unavailable during the static build. `GET /api/walkthrough/config` returns only readiness and the public `PUBLIC_TURNSTILE_SITE_KEY` (or `TURNSTILE_SITE_KEY` alias), after checking that receiving is enabled and configured for the request's origin. The browser then enables the fields and loads Turnstile. Missing configuration retains the phone fallback; email credentials and recipient details are never returned.
 
+Cloudflare Pages project `fenrir-ccs-website` builds production from `main`. A requested production form now requires a nonempty `PUBLIC_TURNSTILE_SITE_KEY` at build time instead of silently publishing disabled fields. Set it as a public Production build variable, separately from the private Turnstile secret. Local/preview/QA overrides on main fail explicitly. Actual preview branches remain disabled. See the five-setting build/runtime map in [DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
 ## Verification
 
 ```powershell
 npm.cmd run typecheck
 npm.cmd test
 npm.cmd run check:function
+npm.cmd run check:production
 npm.cmd run build
 npm.cmd run qa:build
 npm.cmd run test:e2e
